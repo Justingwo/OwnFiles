@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>ownfile</title>
+  <link href="img/icon.png" rel="shortcut icon">
+  <link href="main.css" rel="stylesheet" type="text/css">
+  <script src="jquery-3.5.1.js"></script>
+  <script src="g.js"></script>
+  <script src="main.js"></script>
+</head>
+
+<body id="body">
+  <div class="" id="bgnd-img"></div>
+  <div class="cover" style="display: none;"></div>
+
+  <!-- 顶栏区域 -->
+  <div class="hidden" id="title_bar" style="display: block;">
+    <div class="brand" id="brand">
+      <a href="/" target="_new"><img id="icon" src="img/icon.png"></a>
+      <span id="title">ownfile WiFi file manager</span>
+    </div>
+    <div class="but" id="menu">
+      <div class="icon" style="background-image: url('img/menu.png');"></div>
+      <div class="hidden" id="submenu" style="display: none;">
+        <p onclick="opReloadPage();"><img src="img/op_refresh.png"><span>Reload page</span></p>
+        <p onclick="opExit();"><img src="img/op_exit.png"><span>Exit</span></p>
+      </div>
+    </div>
+    <div class="but hidden" id="audio_but">
+      <div class="icon" style="background-image: url('img/op_music.png');"></div>
+    </div>
+    <div class="" id="device_name"></div>
+  </div>
+
+  <table class="hidden" id="browser_pane" style="display: table;">
+    <tbody>
+      <tr>
+        <td class="files_pane">
+          <div style="position: relative;">
+            <div class="drag_scroll" id="up" ondrag="dragTreeScroll"></div>
+            <div class="tree_list" id="tree_list"></div>
+            <div class="drag_scroll" id="down" ondrag="dragTreeScroll"></div>
+          </div>
+        </td>
+        <td id="separator"></td>
+        <td class="files_pane">
+          <div class="" id="grid_list">
+            <div class="" id="toolbar">
+              <div class="but" id="dirUp" title="Up dir" disabled="disabled">
+                <div class="icon" style="background-image: url('img/op_up_dir.png');"></div>
+              </div>
+              <div class="but" id="delete" title="Delete file" ondrag="deleteDrag" disabled="disabled">
+                <div class="icon" style="background-image: url('img/op_delete.png');"></div>
+              </div>
+              <div class="but" id="dirNew" title="New folder">
+                <div class="icon" style="background-image: url('img/op_new_folder.png');"></div>
+              </div>
+              <div class="but" id="rename" title="Rename" ondrag="renameDrag" disabled="disabled">
+                <div class="icon" style="background-image: url('img/op_rename.png');"></div>
+              </div>
+              <div class="but" id="upload" title="Upload">
+                <div class="icon" style="background-image: url('img/upload.png');"></div>
+              </div>
+              <input type="file" multiple="multiple" onchange="opUploadPick(event);" id="in_upload">
+              <div class="but" id="get_zip" title="Download as Zip" onclick="opDownloadAsZip();" ondrag="zipDrag">
+                <div class="icon" style="background-image: url('img/download_zip.png');"></div>
+              </div>
+
+              <div class="" id="files_info">
+                <div class="" id="counters">
+                  <img src="img/le_folder.png"><span id="num_dirs">0</span>
+                  <img src="img/le_file.png"><span id="num_files">0</span>
+                  <span id="num_hidden" style="display: none;"></span>
+                </div>
+                <div class="" id="num_marked" style="display: none;"><img src="img/check_marker_on.png">
+                  <div class="" id="text"></div>
+                </div>
+              </div>
+              <div class="" id="onRight">
+                <div class="but" id="showHidden" title="Show hidden" onclick="opShowHidden();">
+                  <div class="icon" style="background-image: url('img/op_show_hidden.png');"></div>
+                </div>
+                <div class="but" id="marker" title="Mark files">
+                  <div class="icon" style="background-image: url('img/check_marker_on.png');"></div>
+                </div>
+                <div class="but" id="refresh" title="Refresh" onclick="opDirRefresh();">
+                  <div class="icon" style="background-image: url('img/op_refresh.png');"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid_scroll" id="grid_scroll">
+              <div class="grid_list" id="grid_in"></div>
+              <!-- 🚀 网页端安全防线：只读状态通知栏 -->
+              <div class="hidden" id="read_only"
+                style="background-color: rgba(200,50,50,0.8); color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold;">
+                Read-only access</div>
+            </div>
+            <div id="developer_support"
+              style="margin-top: 4px; white-space: nowrap; font-size: 12px; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 8px;">
+
+              <a href="https://github.com/ownfile/ownfile" target="_blank"
+                style="color: var(--accent); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                <svg height="16" viewBox="0 0 16 16" width="16" style="fill: currentColor; vertical-align: middle;">
+                  <path
+                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+                  </path>
+                </svg>
+                <span>项目地址</span>
+              </a>
+
+              <a href="https://github.com/your-donation-page-url" target="_blank"
+                style="color: var(--accent); text-decoration: none; font-weight: 600;">支持开发者</a>
+
+              <span class="support-version" style="color: var(--text-faint); font-size: 11px;">v1.7.4</span>
+            </div>
+          </div>
+          <table id="bottom_bar">
+            <tbody>
+              <tr>
+                <td id="info_line">
+                  <div class="" id="in" style="display: none;">
+                    <div class="" id="icon"></div>
+                    <div class="" id="msg"></div>
+                  </div>
+                </td>
+                <td class="hidden" id="uploads">
+                  <div class="" id="queue">
+                    <div class="" id="title">Uploading</div>
+                    <div class="" id="in"></div>
+                    <div class="" id="cancel_all">
+                      <div class="but_bgnd">Cancel all</div>
+                    </div>
+                    <div class="" id="remain_time"></div>
+                  </div>
+                  <div class="" id="progress">
+                    <div class="" id="bar">
+                      <div class="" id="pos"></div>
+                    </div>
+                    <div class="" id="percent"></div>
+                    <div class="" id="stat"></div>
+                  </div>
+                  <div class="" id="counter"></div>
+                  <div class="file">
+                    <div class="but" id="cancel" title="Cancel">
+                      <div class="icon"></div>
+                    </div>
+                    <div class="" id="size"></div>
+                    <div class="" id="name"></div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- 查看器骨架 -->
+          <div class="worktable" id="text_view">
+            <div class="" id="canvas"><textarea id="text"></textarea></div>
+            <div class="" id="toolbar">
+              <div class="" id="info">
+                <div class="" id="name"></div>
+                <div class="" id="media_info"></div>
+              </div>
+              <div class="" id="controls">
+                <div class="but" id="save" title="Save">
+                  <div class="icon" style="background-image: url('img/save.png');"></div>
+                </div>
+                <div class="but" id="start_edit" title="Edit text">
+                  <div class="icon" style="background-image: url('img/op_text_edit.png');"></div>
+                </div>
+                <div class="but" id="wrap" title="Wrap text">
+                  <div class="icon" style="background-image: url('img/wrap_text_off.png');"></div>
+                </div>
+                <span id="edit_info">Edit text</span>
+              </div>
+              <div class="" id="onRight">
+                <div class="but" id="close" title="Close">
+                  <div class="icon" style="background-image: url('img/ic_close.png');"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="worktable" id="media_viewer">
+            <div class="" id="media_canvas"></div>
+            <div class="" id="toolbar">
+              <div class="" id="info">
+                <div class="" id="counter"></div>
+                <div class="" id="name"></div>
+                <div class="" id="media_info"></div>
+              </div>
+              <div class="" id="controls">
+                <div class="but" id="prev" title="Previous">
+                  <div class="icon" style="background-image: url('img/previous.png');"></div>
+                </div>
+                <div class="but" id="next" title="Next">
+                  <div class="icon" style="background-image: url('img/next.png');"></div>
+                </div>
+                <div class="but" id="slideshow" title="Slideshow">
+                  <div class="icon" style="background-image: url('img/slideshow_on.png');"></div>
+                </div>
+                <div class="but" id="rename" title="Rename">
+                  <div class="icon" style="background-image: url('img/op_rename.png');"></div>
+                </div>
+                <div class="but" id="download" title="Download">
+                  <div class="icon" style="background-image: url('img/download.png');"></div>
+                </div>
+                <div class="but" id="delete" title="Delete">
+                  <div class="icon" style="background-image: url('img/op_delete.png');"></div>
+                </div>
+              </div>
+              <div class="" id="onRight">
+                <div class="but" id="options" title="Options">
+                  <div class="icon" style="background-image: url('img/op_settings.png');"></div>
+                </div>
+                <div class="but" id="fullscreen" title="Fullscreen">
+                  <div class="icon" style="background-image: url('img/imgv_fullscreen.png');"></div>
+                </div>
+                <div class="but" id="close" title="Close">
+                  <div class="icon" style="background-image: url('img/ic_close.png');"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 底部状态栏 -->
+
+
+  <!-- 对话框骨架 -->
+  <div class="dlg hidden" id="dlgCancelable">
+    <div class="no-select" id="title">
+      <div class="" id="icon"></div>
+      <div class="" id="text"></div>
+    </div>
+    <div class="" id="in">
+      <div class="" id="msg"></div><button onclick="unCover();">Cancel</button>
+    </div>
+  </div>
+  <div class="dlg hidden" id="dlgOkCancel">
+    <div class="no-select" id="title">
+      <div class="" id="icon"></div>
+      <div class="" id="text"></div>
+    </div>
+    <div class="" id="in">
+      <div class="" id="msg"></div><button id="ok">OK</button><button id="cancel">Cancel</button>
+    </div>
+  </div>
+  <div class="dlg hidden" id="dlgEnterName">
+    <div class="no-select" id="title">
+      <div class="" id="icon"></div>
+      <div class="" id="text"></div>
+    </div>
+    <form id="in">
+      <div class="" id="msg"></div><input type="text" id="text" autocomplete="off" spellcheck="false">
+      <div class="" id="buttons"><input type="submit" value="OK"><button onclick="unCover();">Cancel</button></div>
+    </form>
+  </div>
+  <!-- 🚀 网页端安全防线：纯正的专属身份认证登录弹窗 -->
+  <div class="dlg hidden" id="dlgLogin">
+    <div class="no-select" id="title">
+      <div class="" id="icon" style="background-image: url('img/lock.png');"></div>
+      <div class="" id="text">Authorization Required</div>
+    </div>
+    <form id="in_login_form">
+      <div class="" id="msg">Please enter username and password to access files.</div>
+      <input type="text" id="login_user" placeholder="Username" autocomplete="off" spellcheck="false"
+        style="width: 100%; margin-bottom: 8dp; padding: 4px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+      <input type="password" id="login_pwd" placeholder="Password" autocomplete="off"
+        style="width: 100%; margin-bottom: 12dp; padding: 4px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+      <div class="" id="buttons">
+        <input type="submit" value="Login" style="margin-left: 10px; float: right;">
+      </div>
+    </form>
+  </div>
+  <div class="dlg hidden" id="dlgAudioPlay">
+    <div class="no-select" id="title">
+      <div class="" id="icon"></div>
+      <div class="but" id="bgnd" title="Play in background">
+        <div class="icon" style="background-image: url('img/but_move_up.png');"></div>
+      </div>
+      <div class="" id="text"></div>
+    </div>
+    <div class="" id="in">
+      <div class="" id="msg"></div>
+      <div class="" id="counter"></div>
+      <div class="" id="name"></div><audio controls="controls"></audio>
+      <div class="" id="toolbar">
+        <div class="but" id="prev" title="Previous">
+          <div class="icon" style="background-image: url('img/previous.png');"></div>
+        </div>
+        <div class="but" id="next" title="Next">
+          <div class="icon" style="background-image: url('img/next.png');"></div>
+        </div>
+        <div class="" id="onRight">
+          <div class="but checkbox" id="repeat" title="Repeat">
+            <div class="icon" style="background-image: url('img/repeat.png');"></div>
+          </div>
+          <div class="but checkbox" id="shuffle" title="Shuffle">
+            <div class="icon" style="background-image: url('img/shuffle.png');"></div>
+          </div>
+          <div class="but" id="close" title="Close">
+            <div class="icon" style="background-image: url('img/ic_close.png');"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hidden" id="drag-toast"></div>
+
+  <script>$(document).ready(onReady);</script>
+  <noscript>This application requires JavaScript to be enabled in your browser.</noscript>
+
+  <div class="hidden" id="repo">
+    <div class="le" id="le_volume">
+      <div class="le_in">
+        <p id="exp" expanded="false"></p>
+        <p id="icon"></p>
+        <div class="" id="title"></div>
+        <div class="" id="dir_size"></div>
+        <div class="" id="file_size"></div>
+      </div>
+    </div>
+    <div class="le" id="le_file">
+      <div class="le_in">
+        <p id="icon"></p>
+        <div class="" id="title"></div>
+        <div class="" id="file_size"></div>
+        <div class="" id="time"></div>
+        <div class="" id="mark"></div>
+      </div>
+    </div>
+    <div class="le" id="le_dir">
+      <div class="le_in" ondrag="leDrag">
+        <p id="exp" expanded="false"></p>
+        <p id="icon"></p>
+        <div class="" id="title"></div>
+        <div class="" id="dir_size"></div>
+        <div class="" id="mark"></div>
+      </div>
+    </div>
+    <div class="le" id="le_media">
+      <div class="le_in">
+        <p id="icon"></p>
+        <div class="" id="title"></div>
+        <div class="" id="file_size"></div>
+        <div class="" id="time"></div>
+        <div class="" id="mark"></div>
+      </div>
+    </div>
+    <div class="but">
+      <div class="icon"></div>
+    </div>
+    <table id="popup" border="0" cellspacing="0">
+      <tbody>
+        <tr id="trt">
+          <td id="lt"></td>
+          <td id="t"></td>
+          <td id="rt"></td>
+        </tr>
+        <tr>
+          <td id="l"></td>
+          <td id="c">
+            <div class="" id="title"></div>
+            <div class="" id="items">
+              <div class="" id="item"><img><span id="text"></span></div>
+            </div>
+          </td>
+          <td id="r"></td>
+        </tr>
+        <tr id="trb">
+          <td id="lb"></td>
+          <td id="b"></td>
+          <td id="rb"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+
+</html>
