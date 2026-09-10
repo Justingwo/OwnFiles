@@ -644,4 +644,16 @@
     <string name="about_author_name_title">张海</string>
     <string name="about_author_github_title">在 GitHub 上关注</string>
     <string name="about_author_twitter_title">在 Twitter 上关注</string>
+    <string name="http_server_state_title">状态</string>
+    <string name="http_server_state_summary_running">运行中</string>
+    <string name="http_server_state_summary_stopped">已停止</string>
+    <string name="http_server_url_title">网页访问地址</string>
+    <string name="http_server_configuration_title">配置</string>
+    <string name="http_server_port_title">端口</string>
+    <string name="http_server_anonymous_login_title">匿名登录</string>
+    <string name="http_server_username_title">用户名</string>
+    <string name="http_server_password_title">密码</string>
+    <string name="http_server_home_directory_title">根文件夹</string>
+    <string name="http_server_writable_title">允许写入</string>
 </resources>
+

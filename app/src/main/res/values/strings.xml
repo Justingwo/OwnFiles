@@ -801,4 +801,24 @@
 
     <string name="shortcut_downloads_title" translatable="false">@string/navigation_standard_directory_downloads</string>
     <string name="shortcut_ftp_server_title" translatable="false">@string/ftp_server_title</string>
+    <string name="http_server_state_title">Status</string>
+    <string name="http_server_state_summary_running">Running</string>
+    <string name="http_server_state_summary_stopped">Stopped</string>
+    <string name="http_server_url_title">Web URL</string>
+    <string name="http_server_configuration_title">Configuration</string>
+    <string name="http_server_port_title">Port</string>
+    <string name="pref_key_http_server_state" translatable="false">pref_key_http_server_state</string>
+    <string name="pref_key_http_server_port" translatable="false">pref_key_http_server_port</string>
+    <string name="http_server_anonymous_login_title">Anonymous login</string>
+    <string name="http_server_username_title">Username</string>
+    <string name="pref_default_value_http_server_username" translatable="false">admin</string>
+    <string name="http_server_password_title">Password</string>
+    <string name="http_server_home_directory_title">Root folder</string>
+    <string name="http_server_writable_title">Allow write</string>
+    <string name="pref_key_http_server_anonymous_login" translatable="false">pref_key_http_server_anonymous_login</string>
+    <string name="pref_key_http_server_username" translatable="false">pref_key_http_server_username</string>
+    <string name="pref_key_http_server_password" translatable="false">pref_key_http_server_password</string>
+    <string name="pref_key_http_server_home_directory" translatable="false">pref_key_http_server_home_directory</string>
+    <string name="pref_key_http_server_writable" translatable="false">pref_key_http_server_writable</string>
 </resources>
+

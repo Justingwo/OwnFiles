@@ -401,5 +401,6 @@
         <meta-data
             android:name="firebase_crashlytics_collection_enabled"
             android:value="false" />
+        <service android:name="me.zhanghai.android.files.httpserver.HttpServerService" android:exported="false" />
     </application>
 </manifest>

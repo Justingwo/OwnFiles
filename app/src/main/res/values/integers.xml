@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 
 <!--
   ~ Copyright (c) 2018 Hai Zhang <dreaming.in.code.zh@gmail.com>
@@ -18,4 +18,6 @@
 
     <!-- SevenZOutputFile requires SeekableByteChannel which requires Android N. -->
     <integer name="create_archive_type_seven_z_visibility">@integer/visibility_gone</integer>
+    <integer name="pref_default_value_http_server_port">8080</integer>
 </resources>
+
