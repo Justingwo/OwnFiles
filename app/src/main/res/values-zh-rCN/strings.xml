@@ -67,6 +67,7 @@
     <string name="notification_channel_file_job_name">文件操作</string>
     <string name="notification_channel_file_job_description">显示和控制文件操作</string>
     <string name="notification_channel_ftp_server_name">FTP 服务器</string>
+    <string name="navigation_http_server">HTTP 服务器</string>
     <string name="notification_channel_ftp_server_description">显示和控制 FTP 服务器</string>
 
     <string name="file_action_archive_password_title">需要密码</string>

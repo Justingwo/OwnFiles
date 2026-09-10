@@ -71,6 +71,7 @@
     <string name="notification_channel_file_job_name">File operations</string>
     <string name="notification_channel_file_job_description">Display and control file operations</string>
     <string name="notification_channel_ftp_server_name">FTP server</string>
+    <string name="navigation_http_server">HTTP Server</string>
     <string name="notification_channel_ftp_server_description">Display and control the FTP server</string>
 
     <string name="file_action_archive_password_title">Password required</string>
