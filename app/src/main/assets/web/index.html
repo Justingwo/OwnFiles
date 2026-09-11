@@ -93,7 +93,7 @@
 
             <div class="grid_scroll" id="grid_scroll">
               <div class="grid_list" id="grid_in"></div>
-              <!-- 🚀 网页端安全防线：只读状态通知栏 -->
+              <!-- 网页端安全防线：只读状态通知栏 -->
               <div class="hidden" id="read_only"
                 style="background-color: rgba(200,50,50,0.8); color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold;">
                 Read-only access</div>
@@ -260,20 +260,19 @@
       <div class="" id="buttons"><input type="submit" value="OK"><button onclick="unCover();">Cancel</button></div>
     </form>
   </div>
-  <!-- 🚀 网页端安全防线：纯正的专属身份认证登录弹窗 -->
-  <div class="dlg hidden" id="dlgLogin">
+  <!-- 网页端安全防线：纯正的专属身份认证登录弹窗 -->
+  <div class="dlg hidden" id="dlgLogin" style="width: 300px;">
     <div class="no-select" id="title">
       <div class="" id="icon" style="background-image: url('img/lock.png');"></div>
-      <div class="" id="text">Authorization Required</div>
+      <div class="" id="text">访客登录</div>
     </div>
-    <form id="in_login_form">
-      <div class="" id="msg">Please enter username and password to access files.</div>
-      <input type="text" id="login_user" placeholder="Username" autocomplete="off" spellcheck="false"
-        style="width: 100%; margin-bottom: 8dp; padding: 4px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-      <input type="password" id="login_pwd" placeholder="Password" autocomplete="off"
-        style="width: 100%; margin-bottom: 12dp; padding: 4px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+    <form id="in_login_form" style="box-sizing: border-box;padding: 0 20px;">
+      <input type="text" id="login_user" placeholder="用户名" autocomplete="off" spellcheck="false"
+        style="width: 100%; margin:10px 0px; padding: 4px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+      <input type="password" id="login_pwd" placeholder="密码" autocomplete="off"
+        style="width: 100%; margin:10px 0px; padding: 4px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
       <div class="" id="buttons">
-        <input type="submit" value="Login" style="margin-left: 10px; float: right;">
+        <input type="submit" value="登录" style="margin-left: 10px; float: right;">
       </div>
     </form>
   </div>

@@ -29,66 +29,82 @@ class AndroidHttpServer(
 ) : NanoHTTPD(port) {
 
     override fun serve(session: IHTTPSession): Response {
-        // 1. Basic Auth 鉴权
-        if (!anonymousLogin) {
-            val authHeader = session.headers["authorization"]
-            if (authHeader == null || !checkAuth(authHeader)) {
-                val response = newFixedLengthResponse(Response.Status.UNAUTHORIZED, MIME_PLAINTEXT, "Unauthorized")
-                response.addHeader("WWW-Authenticate", "Basic realm=\"Files HTTP Server\"")
-                return response
-            }
-        }
-
         val uri = session.uri
         val queryString = session.queryParameterString ?: ""
 
-        // 2. 避免调用 session.parameters 导致上传数据流被提前消耗
-        val isUpload = session.method == Method.POST && (queryString.contains("cmd=file") || uri.contains("cmd=file") || queryString.contains("cmd=upload"))
-
-        // 3. 只读权限拦截
-        if (!allowWrite) {
-            if (session.method == Method.POST || queryString.contains("cmd=delete")) {
-                return newFixedLengthResponse(Response.Status.FORBIDDEN, MIME_PLAINTEXT, "Forbidden: Server is in READ_ONLY mode.")
+        // 1. 安全提取 cmd 指令，杜绝提前解析 POST Body
+        var cmd: String? = null
+        if (queryString.isNotEmpty()) {
+            val pairs = queryString.split("&")
+            for (pair in pairs) {
+                val idx = pair.indexOf("=")
+                if (idx != -1) {
+                    val key = Uri.decode(pair.substring(0, idx))
+                    if (key == "cmd") {
+                        cmd = Uri.decode(pair.substring(idx + 1))
+                        break
+                    }
+                }
             }
         }
 
-        // 4. 优先处理文件上传（确保 inputStream 绝对完整）
+        // 2. 静态页面首屏加载放行（仅在无 cmd 指令时派发静态网页，避免抢占 Ajax 接口）
+        if (cmd == null) {
+            val assetPath = if (uri == "/" || uri.isEmpty()) "web/index.html" else "web$uri"
+            try {
+                val inputStream: InputStream = context.assets.open(assetPath)
+                val mimeType = getCustomMimeType(assetPath)
+                return newChunkedResponse(Response.Status.OK, mimeType, inputStream)
+            } catch (_: Exception) {}
+        }
+
+        // 3. API 鉴权校验（匿名模式跳过）
+        if (!anonymousLogin) {
+            val authHeader = session.headers["authorization"]
+            if (authHeader == null || !checkAuth(authHeader)) {
+                val errJson = JSONObject().apply {
+                    put("ok", false)
+                    put("auth", false)
+                    put("err", "Unauthorized")
+                }
+                return newFixedLengthResponse(Response.Status.UNAUTHORIZED, "application/json; charset=utf-8", errJson.toString())
+            }
+        }
+
+        // 4. 只读权限拦截
+        if (!allowWrite) {
+            if (session.method == Method.POST || cmd == "delete") {
+                return newFixedLengthResponse(Response.Status.FORBIDDEN, "application/json; charset=utf-8", "{\"ok\":false,\"err\":\"Server is in READ_ONLY mode.\"}")
+            }
+        }
+
+        // 5. 上传处理
+        val isUpload = session.method == Method.POST && (queryString.contains("cmd=file") || uri.contains("cmd=file") || cmd == "upload")
         if (isUpload) {
             return handleUpload(session)
         }
 
-        val params = session.parameters
-        val cmd = params["cmd"]?.firstOrNull()
-
-        // 5. 获取文件列表
+        // 6. 获取文件列表 (JSON 格式严格对齐原版前端)
         if (cmd == "list_root" || cmd == "list") {
             return handleListDirectory(session, cmd, !allowWrite)
         }
 
-        // 6. 删除操作
+        // 7. 删除操作
         if (cmd == "delete") {
             return handleDeleteAction(session)
         }
 
-        // 7. 提取 APK 图标
+        // 8. 提取 APK 图标
         if (cmd == "ext_icon") {
             return handleApkIcon(session.uri)
         }
 
-        // 8. 视频首帧缩略图或文件直接下载
+        // 9. 视频缩略图或物理文件下载
         if (cmd == "file" || cmd == "image" || cmd == "thumbnail") {
             return handleFileDelivery(uri, cmd)
         }
 
-        // 9. 静态网页资源分发
-        val assetPath = if (uri == "/" || uri.isEmpty()) "web/index.html" else "web$uri"
-        return try {
-            val inputStream: InputStream = context.assets.open(assetPath)
-            val mimeType = getCustomMimeType(assetPath)
-            newChunkedResponse(Response.Status.OK, mimeType, inputStream)
-        } catch (_: Exception) {
-            newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Asset Not Found: $uri")
-        }
+        return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "404 Not Found: $uri")
     }
 
     private fun checkAuth(authHeader: String): Boolean {
@@ -217,7 +233,25 @@ class AndroidHttpServer(
 
     private fun handleDeleteAction(session: IHTTPSession): Response {
         return try {
-            val targetPath = session.parameters["path"]?.firstOrNull() ?: Uri.decode(session.uri)
+            var targetPath: String? = null
+            val queryString = session.queryParameterString ?: ""
+            if (queryString.isNotEmpty()) {
+                val pairs = queryString.split("&")
+                for (pair in pairs) {
+                    val idx = pair.indexOf("=")
+                    if (idx != -1) {
+                        val key = Uri.decode(pair.substring(0, idx))
+                        if (key == "path") {
+                            targetPath = Uri.decode(pair.substring(idx + 1))
+                            break
+                        }
+                    }
+                }
+            }
+            if (targetPath == null) {
+                targetPath = Uri.decode(session.uri)
+            }
+
             val file = File(targetPath)
             if (file.exists()) {
                 val success = if (file.isDirectory) file.deleteRecursively() else file.delete()
@@ -240,7 +274,6 @@ class AndroidHttpServer(
             val uriPath = Uri.decode(session.uri)
             val queryString = session.queryParameterString ?: ""
 
-            // 从 query 参数中安全解析文件名，避免解析 body
             var filename: String? = null
             if (queryString.isNotEmpty()) {
                 val pairs = queryString.split("&")
@@ -285,7 +318,6 @@ class AndroidHttpServer(
 
             scanMediaFile(destFile)
 
-            // 对齐原版完整协议
             val res = JSONObject().apply {
                 put("ok", true)
                 put("length", destFile.length())
